@@ -1,7 +1,7 @@
 import java.util.*;
 
 // Time and space complexity analysis is updated to handle large K
-// O(MlogM+M∗N)
+// O(MlogM+M∗NlogN)
 // O(N+M)
 
 public class ScalableCarRentalSystemWithSinglePQ {
@@ -50,6 +50,7 @@ public class ScalableCarRentalSystemWithSinglePQ {
     public CarRentalSystem() {
       // Single priority queue to manage all cars by their availability (end time)
       carQueue = new PriorityQueue<>(Comparator.comparingLong(car -> car.endTime));
+      getCategoryOrder();
     }
 
     // Add cars to the system
@@ -63,6 +64,7 @@ public class ScalableCarRentalSystemWithSinglePQ {
       int carsUsed = 0;
       requests.sort(Comparator.comparing(request -> request.startTime));  // Sort by start time
       Set<String> removedCategories;
+      Map<String, Integer> activeCount = new HashMap<>();
 
       // Process each request
       for (Request request : requests) {
@@ -75,20 +77,23 @@ public class ScalableCarRentalSystemWithSinglePQ {
         // poll N cars
         // Try to fulfill the request with the requested category or higher
         while (!carQueue.isEmpty() && carQueue.peek().endTime <= requestStart) {
-          removedCategories.add(carQueue.poll().category);  // Remove the car from the queue
+          Car car = carQueue.poll(); // O(N log N) for polling cars
+          removedCategories.add(car.category);  // Remove the car from the queue
+          activeCount.merge(car.category, -1, Integer::sum);
           // N log N
         }
 
-        String possibleCategory = assignCar(removedCategories, category);
+        String possibleCategory = assignCar(removedCategories, category, activeCount);
 
         // If the request could not be fulfilled by an available car, we need to add a new car
         if (possibleCategory == null) {
-          ++carsUsed;
+          carsUsed = Math.max(carsUsed, carQueue.size() + 1);
           possibleCategory = request.requestedCategory;
-          carsNeeded.merge(possibleCategory, 1, Integer::sum);
+          carsNeeded.put(possibleCategory, activeCount.getOrDefault(possibleCategory, 0) + 1);
           System.out.println("No available car for the " + request + " request.");
         }
         System.out.println("Booking " + possibleCategory + " for " + request + " request.");
+        activeCount.merge(possibleCategory, 1, Integer::sum);
         addCar(possibleCategory, requestEnd);  // Add a new car to the queue
         // log N
       }
@@ -96,10 +101,11 @@ public class ScalableCarRentalSystemWithSinglePQ {
       return carsUsed;
     }
 
-    private String assignCar(Set<String> removedCategories, String category) {
+    private String assignCar(Set<String> removedCategories, String category, Map<String, Integer> activeCount) {
       // K categories
       for (String mappedCategory : categoriesPossible.get(category)) {
-        if (removedCategories.contains(mappedCategory)) {
+        if (removedCategories.contains(mappedCategory) ||
+            activeCount.getOrDefault(mappedCategory, 0) < carsNeeded.getOrDefault(mappedCategory, 0)) {
           return mappedCategory;
         }
       }
@@ -120,12 +126,12 @@ public class ScalableCarRentalSystemWithSinglePQ {
 
     // Example list of customer requests
     List<Request> requests = Arrays.asList(
-        new Request("Basic", 5000, 10000),    // Basic request from 5000 to 10000 ms
-        new Request("Premium", 12000, 16000), // Premium request from 12000 to 16000 ms
-        new Request("Enterprise", 18000, 22000), // Enterprise request from 18000 to 22000 ms
-        new Request("Basic", 9000, 13000),    // Basic request from 9000 to 13000 ms
-        new Request("Premium", 14000, 18000), // Premium request from 14000 to 18000 ms
-        new Request("Premium", 2000, 3000)    // Premium request from 14000 to 18000 ms
+        new Request("Basic", 5000, 6000),    // Basic request from 5000 to 10000 ms
+        new Request("Premium", 5000, 6000), // Premium request from 12000 to 16000 ms
+//        new Request("Enterprise", 18000, 22000), // Enterprise request from 18000 to 22000 ms
+        new Request("Basic", 6000, 7000),    // Basic request from 9000 to 13000 ms
+//        new Request("Premium", 14000, 18000), // Premium request from 14000 to 18000 ms
+        new Request("Basic", 6000, 7000)    // Premium request from 14000 to 18000 ms
     );
 
     // Get the minimum number of cars required to fulfill the requests
