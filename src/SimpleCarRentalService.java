@@ -1,7 +1,8 @@
-import java.util.Arrays;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
+// Complexity
+// Overall time complexity: O(M log M + M log N).
+// Space N - number of cars
 public class SimpleCarRentalService {
 
   static class Request {
@@ -19,6 +20,7 @@ public class SimpleCarRentalService {
 
   private int minimumCarsRequired(List<Request> requests) {
 
+    requests.sort(Comparator.comparing(carRequest -> carRequest.startTime));
     int minCars = 0;
     PriorityQueue<Integer> usedCars = new PriorityQueue<>();
 
