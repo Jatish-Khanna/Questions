@@ -4,6 +4,17 @@ import java.util.*;
 // O(MlogM+M∗NlogN)
 // O(N+M)
 
+/**
+ * Scalability:
+ * For small K, the solution should work quite efficiently with the current approach.
+ * The single priority queue ensures that the car allocation is fast, and the space complexity remains manageable.
+ *
+ * For large K (many categories), the system could
+ * slow down due to the increased number of iterations in assignCar.
+ * It may make sense to use a more efficient way to manage
+ * the priority queues for each category (e.g., dedicated queues or more efficient search mechanisms).
+ */
+
 public class ScalableCarRentalSystemWithSinglePQ {
 
   // Represents a car with an ID, category, start time, and end time
@@ -104,8 +115,7 @@ public class ScalableCarRentalSystemWithSinglePQ {
     private String assignCar(Set<String> removedCategories, String category, Map<String, Integer> activeCount) {
       // K categories
       for (String mappedCategory : categoriesPossible.get(category)) {
-        if (removedCategories.contains(mappedCategory) ||
-            activeCount.getOrDefault(mappedCategory, 0) < carsNeeded.getOrDefault(mappedCategory, 0)) {
+        if (removedCategories.contains(mappedCategory) || activeCount.getOrDefault(mappedCategory, 0) < carsNeeded.getOrDefault(mappedCategory, 0)) {
           return mappedCategory;
         }
       }
@@ -125,8 +135,7 @@ public class ScalableCarRentalSystemWithSinglePQ {
     CarRentalSystem rentalSystem = new CarRentalSystem();
 
     // Example list of customer requests
-    List<Request> requests = Arrays.asList(
-        new Request("Basic", 5000, 6000),    // Basic request from 5000 to 10000 ms
+    List<Request> requests = Arrays.asList(new Request("Basic", 5000, 6000),    // Basic request from 5000 to 10000 ms
         new Request("Premium", 5000, 6000), // Premium request from 12000 to 16000 ms
 //        new Request("Enterprise", 18000, 22000), // Enterprise request from 18000 to 22000 ms
         new Request("Basic", 6000, 7000),    // Basic request from 9000 to 13000 ms
