@@ -89,7 +89,7 @@ public class ScalableCarRentalSystemWithSinglePQ {
         if (possibleCategory == null) {
           carsUsed = Math.max(carsUsed, carQueue.size() + 1);
           possibleCategory = request.requestedCategory;
-          carsNeeded.put(possibleCategory, activeCount.getOrDefault(possibleCategory, 0) + 1);
+          carsNeeded.merge(possibleCategory, 1, Integer::sum);
           System.out.println("No available car for the " + request + " request.");
         }
         System.out.println("Booking " + possibleCategory + " for " + request + " request.");

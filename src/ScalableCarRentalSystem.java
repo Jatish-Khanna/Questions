@@ -129,12 +129,12 @@ public class ScalableCarRentalSystem {
 
     // Example list of customer requests
     List<Request> requests = Arrays.asList(
-        new Request("Basic", 5000, 10000),    // Basic request from 5000 to 10000 ms
-        new Request("Premium", 12000, 16000), // Premium request from 12000 to 16000 ms
-        new Request("Enterprise", 18000, 22000), // Enterprise request from 18000 to 22000 ms
-        new Request("Basic", 9000, 13000),    // Basic request from 9000 to 13000 ms
-        new Request("Premium", 14000, 18000), // Premium request from 14000 to 18000 ms
-        new Request("Premium", 2000, 3000)  // Premium request from 14000 to 18000 ms
+        new Request("Basic", 5000, 6000),    // Basic request from 5000 to 10000 ms
+        new Request("Premium", 5000, 6000), // Premium request from 12000 to 16000 ms
+//        new Request("Enterprise", 18000, 22000), // Enterprise request from 18000 to 22000 ms
+        new Request("Basic", 6000, 7000),    // Basic request from 9000 to 13000 ms
+//        new Request("Premium", 14000, 18000), // Premium request from 14000 to 18000 ms
+        new Request("Basic", 6000, 7000)    // Premium request from 14000 to 18000 ms
     );
 
     // Get the minimum number of cars required to fulfill the requests
