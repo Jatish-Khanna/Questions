@@ -81,7 +81,7 @@ public class ScalableCarRentalSystem {
         if (category == null) {
           ++carsUsed;
           category = request.requestedCategory;
-          carsNeeded.merge(request.requestedCategory, 1, Integer::sum);
+          carsNeeded.merge(category, 1, Integer::sum);
           System.out.println("No available car for the " + request + " request.");
         } else {
           var categoryQueue = carCategoryQueues.get(category);
